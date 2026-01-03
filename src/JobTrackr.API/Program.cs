@@ -1,3 +1,4 @@
+using JobTrackr.Application.Common.Interfaces;
 using JobTrackr.Infrastructure;
 using Scalar.AspNetCore;
 
@@ -6,6 +7,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApi();
+
+builder.Services.AddMediatR(cfg =>
+    cfg.RegisterServicesFromAssembly(typeof(IApplicationDbContext).Assembly));
 
 builder.Services.AddInfrastructure(builder.Configuration);
 
