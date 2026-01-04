@@ -4,6 +4,14 @@ using MediatR;
 
 namespace JobTrackr.Application.Companies.Commands.CreateCompany;
 
+public record CreateCompanyCommand(
+    string Name,
+    string? Industry,
+    string? Location,
+    string? Website,
+    string? Notes
+) : IRequest<Guid>;
+
 public class CreateCompanyCommandHandler : IRequestHandler<CreateCompanyCommand, Guid>
 {
     private readonly IApplicationDbContext _context;
@@ -13,7 +21,7 @@ public class CreateCompanyCommandHandler : IRequestHandler<CreateCompanyCommand,
         _context = context;
     }
 
-    public async Task<Guid> Handle(CreateCompanyCommand request, CancellationToken ct)
+    public async Task<Guid> Handle(CreateCompanyCommand request, CancellationToken cancellationToken)
     {
         var company = Company.Create(
             request.Name,
@@ -25,7 +33,7 @@ public class CreateCompanyCommandHandler : IRequestHandler<CreateCompanyCommand,
 
         _context.Companies.Add(company);
 
-        await _context.SaveChangesAsync(ct);
+        await _context.SaveChangesAsync(cancellationToken);
 
         return company.Id;
     }

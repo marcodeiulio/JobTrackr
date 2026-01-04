@@ -1,10 +1,12 @@
 using JobTrackr.Application.Common.Interfaces;
+using JobTrackr.Application.Common.Mappings;
 using JobTrackr.Infrastructure;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
+MappingConfig.RegisterMappings();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApi();
 
