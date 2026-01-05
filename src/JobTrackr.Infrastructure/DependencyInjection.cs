@@ -4,6 +4,7 @@ using JobTrackr.Domain.Entities;
 using JobTrackr.Infrastructure.Data;
 using JobTrackr.Infrastructure.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -14,11 +15,22 @@ namespace JobTrackr.Infrastructure;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddInfrastructure(
+        this IServiceCollection services,
+        IConfiguration configuration,
+        IWebHostEnvironment? environment = null)
     {
         // register DbContext
-        services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseSqlite(configuration.GetConnectionString("DefaultConnection")));
+        // use InMemory for testing, SQLite for production
+        var connectionString = configuration.GetConnectionString("DefaultConnection");
+        var useInMemory = environment?.EnvironmentName == "Testing" ||
+                          string.IsNullOrEmpty(connectionString);
+        if (useInMemory)
+            services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseInMemoryDatabase("TestDb"));
+        else
+            services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlite(connectionString));
 
         services.AddScoped<IApplicationDbContext>(provider =>
             provider.GetRequiredService<ApplicationDbContext>());
