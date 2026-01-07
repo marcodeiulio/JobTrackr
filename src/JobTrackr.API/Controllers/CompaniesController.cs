@@ -5,10 +5,12 @@ using JobTrackr.Application.Companies.DTOs;
 using JobTrackr.Application.Companies.Queries.GetCompanies;
 using JobTrackr.Application.Companies.Queries.GetCompanyById;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JobTrackr.API.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class CompaniesController : ControllerBase

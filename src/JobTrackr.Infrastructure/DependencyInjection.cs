@@ -56,6 +56,8 @@ public static class DependencyInjection
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 
+        services.AddScoped<IIdentityService, IdentityService>();
+
         // register JWT
         services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 

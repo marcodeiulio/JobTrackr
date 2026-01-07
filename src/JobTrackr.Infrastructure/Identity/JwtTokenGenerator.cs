@@ -4,13 +4,20 @@ using System.Security.Cryptography;
 using System.Text;
 using JobTrackr.Application.Common.Interfaces;
 using JobTrackr.Domain.Entities;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace JobTrackr.Infrastructure.Identity;
 
-public class JwtTokenGenerator(IConfiguration configuration) : IJwtTokenGenerator
+public class JwtTokenGenerator : IJwtTokenGenerator
 {
+    private readonly JwtSettings _jwtSettings;
+
+    public JwtTokenGenerator(IOptions<JwtSettings> jwtOptions)
+    {
+        _jwtSettings = jwtOptions.Value;
+    }
+
     public string GenerateRefreshToken()
     {
         // generate 64 random bytes
@@ -28,10 +35,10 @@ public class JwtTokenGenerator(IConfiguration configuration) : IJwtTokenGenerato
         // Create JwtSecurityToken with claims, expiration, signing credentials
         // Return token as string
 
-        var key = configuration["Jwt:Key"];
-        var issuer = configuration["Jwt:Issuer"];
-        var audience = configuration["Jwt:Audience"];
-        var expirationMinutes = int.Parse(configuration["Jwt:AccessTokenExpirationMinutes"] ?? "15");
+        var key = _jwtSettings.Key;
+        var issuer = _jwtSettings.Issuer;
+        var audience = _jwtSettings.Audience;
+        var expirationMinutes = _jwtSettings.AccessTokenExpirationMinutes;
 
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key!));
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);

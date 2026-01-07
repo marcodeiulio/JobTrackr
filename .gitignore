@@ -12,6 +12,8 @@ dotnet-tools.json
 
 # DB
 *.db
+*.db-shm
+*.db-wal
 
 # Build results
 [Dd]ebug/
