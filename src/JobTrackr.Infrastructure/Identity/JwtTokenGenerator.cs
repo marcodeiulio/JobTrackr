@@ -31,10 +31,6 @@ public class JwtTokenGenerator : IJwtTokenGenerator
 
     public string GenerateAccessToken(User user, IList<string> roles)
     {
-        // Create claims (NameIdentifier, Email, Name, Role)
-        // Create JwtSecurityToken with claims, expiration, signing credentials
-        // Return token as string
-
         var key = _jwtSettings.Key;
         var issuer = _jwtSettings.Issuer;
         var audience = _jwtSettings.Audience;

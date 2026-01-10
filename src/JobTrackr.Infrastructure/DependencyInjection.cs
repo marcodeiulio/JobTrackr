@@ -21,19 +21,21 @@ public static class DependencyInjection
         IWebHostEnvironment? environment = null)
     {
         // register DbContext
-        // use InMemory for testing, SQLite for production
-        var connectionString = configuration.GetConnectionString("DefaultConnection");
-        var useInMemory = environment?.EnvironmentName == "Testing" ||
-                          string.IsNullOrEmpty(connectionString);
-        if (useInMemory)
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseInMemoryDatabase("TestDb"));
-        else
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlite(connectionString));
+        // skip for Testing environment
+        var isTesting = environment?.EnvironmentName == "Testing";
+        if (!isTesting)
+        {
+            var connectionString = configuration.GetConnectionString("DefaultConnection");
+            if (string.IsNullOrEmpty(connectionString))
+                services.AddDbContext<ApplicationDbContext>(options =>
+                    options.UseInMemoryDatabase("DevDb"));
+            else
+                services.AddDbContext<ApplicationDbContext>(options =>
+                    options.UseSqlite(connectionString));
 
-        services.AddScoped<IApplicationDbContext>(provider =>
-            provider.GetRequiredService<ApplicationDbContext>());
+            services.AddScoped<IApplicationDbContext>(provider =>
+                provider.GetRequiredService<ApplicationDbContext>());
+        }
 
         // register Identity
         services.AddIdentity<User, IdentityRole<Guid>>(options =>
