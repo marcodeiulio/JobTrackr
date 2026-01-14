@@ -28,6 +28,6 @@ public class CompanyConfiguration : IEntityTypeConfiguration<Company>
             .HasForeignKey(j => j.CompanyId)
             .OnDelete(DeleteBehavior.Restrict); // Prevent cascade delete of JobApplications
 
-        builder.HasIndex(c => c.Name);
+        builder.HasIndex(c => c.Name).IsUnique();
     }
 }
