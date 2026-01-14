@@ -6,10 +6,12 @@ namespace JobTrackr.Infrastructure.Data.Seeding;
 
 public static class RoleSeeder
 {
-    public static async Task SeedRolesAsync(
+    public static async Task SeedAsync(
         RoleManager<IdentityRole<Guid>> roleManager,
         ILogger logger)
     {
+        logger.LogInformation("Seeding Identity Roles");
+
         await SeedRoleAsync(roleManager, Roles.Admin, logger);
         await SeedRoleAsync(roleManager, Roles.User, logger);
     }
@@ -21,7 +23,7 @@ public static class RoleSeeder
     {
         if (await roleManager.RoleExistsAsync(roleName))
         {
-            logger.LogDebug("Role {RoleName} already exists, skipping", roleName);
+            logger.LogInformation("Role {RoleName} already exists", roleName);
             return;
         }
 

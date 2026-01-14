@@ -29,15 +29,11 @@ public class GlobalExceptionHandlerMiddleware
         }
         catch (Exception exception)
         {
-            _logger.LogError(
-                exception,
-                "An unhandled exception occurred while processing the request.");
-
             await HandleExceptionAsync(context, exception);
         }
     }
 
-    private static async Task HandleExceptionAsync(HttpContext context, Exception exception)
+    private async Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
         // set response content type
         context.Response.ContentType = "application/problem+json";
@@ -48,6 +44,12 @@ public class GlobalExceptionHandlerMiddleware
         switch (exception)
         {
             case NotFoundException notFoundException:
+                _logger.LogWarning(
+                    notFoundException,
+                    "Resource not found: {EntityName} with {Key}",
+                    notFoundException.EntityName,
+                    notFoundException.Key);
+
                 context.Response.StatusCode = StatusCodes.Status404NotFound;
                 problemDetails = new ProblemDetails
                 {
@@ -58,6 +60,11 @@ public class GlobalExceptionHandlerMiddleware
                 break;
 
             case ValidationException validationException:
+                _logger.LogWarning(validationException,
+                    "Validation failed for {RequestType}: {Errors}",
+                    validationException.GetType().Name,
+                    string.Join(". ", validationException.Errors.Keys));
+
                 context.Response.StatusCode = StatusCodes.Status400BadRequest;
                 problemDetails = new ProblemDetails
                 {
@@ -72,6 +79,11 @@ public class GlobalExceptionHandlerMiddleware
                 break;
 
             case DomainException domainException:
+                _logger.LogWarning(
+                    domainException,
+                    "Domain exception occurred: {Message}",
+                    domainException.Message);
+
                 context.Response.StatusCode = StatusCodes.Status400BadRequest;
                 problemDetails = new ProblemDetails
                 {
@@ -82,6 +94,11 @@ public class GlobalExceptionHandlerMiddleware
                 break;
 
             default: // unhandled exceptions
+                _logger.LogError(
+                    exception,
+                    "Unhandled exception of type {ExceptionName}: {Message}",
+                    exception.GetType().Name,
+                    exception.Message);
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
                 problemDetails = new ProblemDetails
                 {

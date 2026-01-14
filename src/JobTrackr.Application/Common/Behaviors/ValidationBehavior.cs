@@ -23,7 +23,7 @@ public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TReques
     {
         // if no validators exist for this handler, skip validation
         if (!_validators.Any())
-            return await next();
+            return await next(cancellationToken);
 
         // run validators and collect results
         var context = new ValidationContext<TRequest>(request);
@@ -48,6 +48,6 @@ public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TReques
                 ));
 
         // if validation is successful, continue to handler
-        return await next();
+        return await next(cancellationToken);
     }
 }
