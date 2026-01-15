@@ -93,7 +93,7 @@ try
 }
 catch (Exception ex)
 {
-    Log.Fatal("Application terminated unexpectedly.");
+    Log.Fatal(ex, "Application terminated unexpectedly");
 }
 finally
 {

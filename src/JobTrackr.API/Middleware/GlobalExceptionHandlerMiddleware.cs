@@ -60,10 +60,13 @@ public class GlobalExceptionHandlerMiddleware
                 break;
 
             case ValidationException validationException:
+                var errorMessages =
+                    validationException.Errors
+                        .SelectMany(e => e.Value.Select(msg => $"{e.Key}: {msg}"));
+
                 _logger.LogWarning(validationException,
-                    "Validation failed for {RequestType}: {Errors}",
-                    validationException.GetType().Name,
-                    string.Join(". ", validationException.Errors.Keys));
+                    "Validation failed {ErrorMessages}",
+                    string.Join(". ", errorMessages));
 
                 context.Response.StatusCode = StatusCodes.Status400BadRequest;
                 problemDetails = new ProblemDetails
