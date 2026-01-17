@@ -1,4 +1,6 @@
 using JobTrackr.Application.Common.Interfaces;
+using JobTrackr.Domain.Entities;
+using JobTrackr.Domain.Exceptions;
 using MediatR;
 
 namespace JobTrackr.Application.Companies.Commands.DeleteCompany;
@@ -19,8 +21,7 @@ public class DeleteCompanyCommandHandler : IRequestHandler<DeleteCompanyCommand,
         var company = await _context.Companies.FindAsync(request.Id, cancellationToken);
 
         if (company == null)
-            // todo throw NotFoundException(nameof(Company), request.Id);
-            throw new Exception($"Company with id {request.Id} not found");
+            throw new NotFoundException(nameof(Company), request.Id);
 
         _context.Companies.Remove(company);
 

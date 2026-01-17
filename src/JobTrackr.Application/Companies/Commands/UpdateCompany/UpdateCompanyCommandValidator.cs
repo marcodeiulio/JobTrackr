@@ -3,15 +3,19 @@ using JobTrackr.Application.Common.Interfaces;
 using JobTrackr.Application.Companies.Commands.Shared;
 using Microsoft.EntityFrameworkCore;
 
-namespace JobTrackr.Application.Companies.Commands.CreateCompany;
+namespace JobTrackr.Application.Companies.Commands.UpdateCompany;
 
-public class CreateCompanyCommandValidator : AbstractValidator<CreateCompanyCommand>
+public class UpdateCompanyCommandValidator : AbstractValidator<UpdateCompanyCommand>
 {
     private readonly IApplicationDbContext _context;
 
-    public CreateCompanyCommandValidator(IApplicationDbContext context)
+    public UpdateCompanyCommandValidator(IApplicationDbContext context)
     {
         _context = context;
+
+        RuleFor(c => c.Id)
+            .NotEmpty().WithMessage("Id cannot be empty.")
+            .NotEqual(Guid.Empty).WithMessage("Id must be valid GUID");
 
         RuleFor(c => c.Name)
             .NotEmpty().WithMessage("Name cannot be empty.")
@@ -29,8 +33,9 @@ public class CreateCompanyCommandValidator : AbstractValidator<CreateCompanyComm
             .Must(CompanyCommandValidatorHelpers.BeValidUrlIfProvided).WithMessage("Invalid url.");
     }
 
-    private async Task<bool> BeUniqueName(string name, CancellationToken cancellationToken)
+    private async Task<bool> BeUniqueName(UpdateCompanyCommand command, string name,
+        CancellationToken cancellationToken)
     {
-        return !await _context.Companies.AnyAsync(c => c.Name == name, cancellationToken);
+        return !await _context.Companies.AnyAsync(c => c.Id != command.Id && c.Name == name, cancellationToken);
     }
 }
