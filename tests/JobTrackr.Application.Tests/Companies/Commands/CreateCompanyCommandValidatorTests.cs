@@ -153,20 +153,21 @@ public class CreateCompanyCommandValidatorTests
     [InlineData("https://.invalid", false)]
     [InlineData("https://invalid.", false)]
     [InlineData("ftp://invalid.com", false)]
-    public async Task Validate_InvalidWebsiteUrl_FailsValidation(string invalidUrl, bool expected)
+    public async Task Validate_UrlVariants_FailsOrPassesValidation(string url, bool expected)
     {
         await using var context = Helpers.CreateInMemoryContext();
 
         var validator = new CreateCompanyCommandValidator(context);
         var command = new CreateCompanyCommand(
             "Name", null, null,
-            invalidUrl,
+            url,
             null);
 
         var result = await validator.TestValidateAsync(command);
 
-        if (!expected)
+        if (expected)
+            result.ShouldNotHaveAnyValidationErrors();
+        else
             result.ShouldHaveValidationErrorFor(c => c.Website);
-        else result.ShouldNotHaveAnyValidationErrors();
     }
 }
