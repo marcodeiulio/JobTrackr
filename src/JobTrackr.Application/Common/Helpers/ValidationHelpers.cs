@@ -1,6 +1,6 @@
-namespace JobTrackr.Application.Companies.Commands.Shared;
+namespace JobTrackr.Application.Common.Helpers;
 
-public static class CompanyCommandValidatorHelpers
+public static class ValidationHelpers
 {
     public static bool BeValidUrlIfProvided(string url)
     {

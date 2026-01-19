@@ -1,6 +1,6 @@
 using FluentValidation;
+using JobTrackr.Application.Common.Helpers;
 using JobTrackr.Application.Common.Interfaces;
-using JobTrackr.Application.Companies.Commands.Shared;
 using Microsoft.EntityFrameworkCore;
 
 namespace JobTrackr.Application.Companies.Commands.CreateCompany;
@@ -26,7 +26,7 @@ public class CreateCompanyCommandValidator : AbstractValidator<CreateCompanyComm
 
         RuleFor(c => c.Website)
             .MaximumLength(500).WithMessage("Website cannot exceed 500 characters.")
-            .Must(CompanyCommandValidatorHelpers.BeValidUrlIfProvided).WithMessage("Invalid url.");
+            .Must(ValidationHelpers.BeValidUrlIfProvided).WithMessage("Invalid URL.");
     }
 
     private async Task<bool> BeUniqueName(string name, CancellationToken cancellationToken)

@@ -18,7 +18,7 @@ public class JobApplicationConfiguration : IEntityTypeConfiguration<JobApplicati
             .HasMaxLength(200);
 
         builder.Property(c => c.JobUrl)
-            .HasMaxLength(1000);
+            .HasMaxLength(500);
 
         builder.HasOne(c => c.Company)
             .WithMany(c => c.JobApplications)

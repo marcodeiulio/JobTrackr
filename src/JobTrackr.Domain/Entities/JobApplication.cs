@@ -1,3 +1,5 @@
+using JobTrackr.Domain.Exceptions;
+
 namespace JobTrackr.Domain.Entities;
 
 public class JobApplication
@@ -76,6 +78,19 @@ public class JobApplication
         Notes = notes;
         CompanyId = companyId;
         JobApplicationStatusId = jobApplicationStatusId;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void ChangeStatus(Guid newStatusId)
+    {
+        if (newStatusId == Guid.Empty)
+            throw new ArgumentException("JobApplicationStatusId cannot be empty", nameof(newStatusId));
+
+        if (Status is not null &&
+            (Status.Name == "Accepted" || Status.Name == "Rejected" || Status.Name == "Withdrawn"))
+            throw new DomainException($"Cannot change from {Status.Name}");
+
+        JobApplicationStatusId = newStatusId;
         UpdatedAt = DateTime.UtcNow;
     }
 }
